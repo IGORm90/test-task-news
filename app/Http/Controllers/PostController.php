@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Category;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
+use App\Http\Controllers\Controller;
 
 class PostController extends Controller
 {
@@ -16,11 +16,14 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    {        
         $posts = Post::orderBy('created_at', 'DESC')->get();
 
+        $categories = Category::all();
+
         return view('manager.posts', [
-            'posts' => $posts
+            'posts' => $posts,
+            'categories' => $categories
         ]);
     }
 
@@ -32,7 +35,10 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
+        auth()->check();
+
         $item = (new Post())->fill($request->validated());
+        $item->save();
 
         return redirect()->back()->withSuccess('Статья была успешно добавлена!');
     }
@@ -43,9 +49,12 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show(Request $request)
     {
-        //
+        $post = Post::findOrFail($request->post)->toArray();
+
+        return response()
+            ->json(['post' => $post]);
     }
 
     /**
@@ -56,6 +65,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        auth()->check();
+
         $categories = Category::orderBy('created_at', 'DESC')->get();
 
         return view('admin.post.edit', [
@@ -71,15 +82,17 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request)
     {
+        auth()->check();
+
+        $post = Post::findOrFail($request->id);
         $post->title = $request->title;
-        $post->img = $request->img;
-        $post->text = $request->text;
-        $post->cat_id = $request->cat_id;
+        $post->content = $request->content;
+        $post->category_id = $request->category_id;
         $post->save();
 
-        return redirect()->back()->withSuccess('Статья была успешно обновлена!');
+        return redirect()->back()->withSuccess('Статья была успешно добавлена!');
     }
 
     /**
@@ -88,9 +101,16 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function delete(Request $request)
     {
+        auth()->check();
+
+        $post = Post::findOrFail($request->post);
         $post->delete();
-        return redirect()->back()->withSuccess('Статья была успешно удалена!');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Статья была успешно удалена!'
+        ]);
     }
 }
