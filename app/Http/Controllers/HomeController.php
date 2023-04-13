@@ -16,7 +16,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $query = Post::with(['category']);
+        $query = Post::orderBy('created_at', 'DESC')->with(['category']);
 
         if (request('category_id')) {
             $query->where('category_id', '=', request('category_id'));

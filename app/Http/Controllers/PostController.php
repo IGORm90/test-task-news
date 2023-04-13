@@ -35,8 +35,6 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
-        auth()->check();
-
         $item = (new Post())->fill($request->validated());
         $item->save();
 
@@ -65,8 +63,6 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        auth()->check();
-
         $categories = Category::orderBy('created_at', 'DESC')->get();
 
         return view('admin.post.edit', [
@@ -84,8 +80,6 @@ class PostController extends Controller
      */
     public function update(Request $request)
     {
-        auth()->check();
-
         $post = Post::findOrFail($request->id);
         $post->title = $request->title;
         $post->content = $request->content;
@@ -103,8 +97,6 @@ class PostController extends Controller
      */
     public function delete(Request $request)
     {
-        auth()->check();
-
         $post = Post::findOrFail($request->post);
         $post->delete();
 

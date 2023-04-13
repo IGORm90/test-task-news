@@ -18,9 +18,18 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug');
             $table->longText('content')->nullable();
-            $table->foreignId('category_id')->constraned()->onDelete('cascade');
-            $table->foreignId('user_id')->constraned()->onDelete('cascade');
+            $table->unsignedBigInteger('category_id')->unsigned();
+            $table->unsignedBigInteger('user_id')->unsigned();
             $table->timestamps();
+
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('categories')
+                ->onDelete('cascade');
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 

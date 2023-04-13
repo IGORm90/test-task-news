@@ -30,6 +30,6 @@ class CategoryController extends Controller
         $item = (new Category())->fill($request->validated());
         $item->save();
 
-        return redirect()->back()->withSuccess('Статья была успешно добавлена!');
+        return redirect()->back()->withSuccess('Категория была успешно добавлена!');
     }
 }
